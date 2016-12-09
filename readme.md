@@ -25,3 +25,4 @@ Frontend: React & Webpack + libs
 5. add `export GOOGLE_APPLICATION_CREDENTIALS=/Users/michen/Python-Projects/ZapHax0rs/ZapHax0rs-c373c6767b9c.json` to .bash_profile and restart your terminal
 6. now you can test using `sh run.sh`
 7. wahoowa you did it!
+8. when done, run `deactivate` to exit virtualenv
