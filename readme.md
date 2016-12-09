@@ -2,6 +2,12 @@
 
 This is the project for the ZapLabs holiday hackathon. :D
 
+Looking for teammates comfortable with these technologies or willing to learn!
+
+Backend: Python Flask + libs
+
+Frontend: React & Webpack + libs
+
 ## Installation tips
 
 #### Prerequisites:
