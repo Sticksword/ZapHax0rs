@@ -1,21 +1,27 @@
 #!/usr/bin/env python
 
-import urllib
 import json
 import os
-import requests
 import csv
 import atexit
 
-from flask import Flask
-from flask import request
-from flask import make_response
+from flask import Flask, request, make_response, send_from_directory, render_template
 # for reference: http://flask.pocoo.org/docs/0.11/quickstart/
 
 # Flask app should start in global layout
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 in_memory_db = {}
 message_db = {}
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory('js', path)
+
 
 @app.route('/message', methods=['POST'])
 def message():
@@ -84,4 +90,4 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     print "Starting app on port %d" % port
     init()
-    app.run(debug=False, port=port, host='0.0.0.0')
+    app.run(debug=True, port=port, host='0.0.0.0')
