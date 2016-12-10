@@ -23,50 +23,74 @@ def index():
 def send_js(path):
     return send_from_directory('js', path)
 
+@app.route('/analyse_entities', methods=['GET'])
+def analyse_entities():
+    comment=request.args.get('comment')
+    credentials = GoogleCredentials.get_application_default()
+    service = discovery.build('language', 'v1', credentials=credentials)
 
-@app.route("/upload", methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        return jsonify({"result": request.get_array(field_name='file')})
-    return '''
-    <!doctype html>
-    <title>Upload an excel file</title>
-    <h1>Excel file upload (csv, tsv, csvz, tsvz only)</h1>
-    <form action="" method=post enctype=multipart/form-data><p>
-    <input type=file name=file><input type=submit value=Upload>
-    </form>
-    '''
+    service_request = service.documents().analyzeEntities(
+        body={
+            'document': {
+                'type': 'PLAIN_TEXT',
+                'content': comment,
+            }
+        }
+    )
+    response = service_request.execute()
 
-@app.route("/download", methods=['GET'])
-def download_file():
-    return excel.make_response_from_array([[1,2], [3, 4]], "csv")
-
-@app.route("/export", methods=['GET'])
-def export_records():
-    return excel.make_response_from_array([[1,2], [3, 4]], "csv", file_name="export_data")
-
-
-@app.route('/message', methods=['POST'])
-def message():
-    req = request.get_json(silent=True, force=True)
-
-    print("Request:")
-    print(json.dumps(req, indent=4))
-
-    res = addMessageToDb(req)
-
-    r = make_response(json.dumps(res, indent=4))
+    r = make_response(json.dumps(response, indent=4))
     r.headers['Content-Type'] = 'application/json'
     return r
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/analyse_sentences', methods=['GET'])
+def analyse_sentences():
+    comment=request.args.get('comment')
+    credentials = GoogleCredentials.get_application_default()
+    service = discovery.build('language', 'v1', credentials=credentials)
+
+    service_request = service.documents().analyzeSentiment(
+        body={
+            'document': {
+                'type': 'PLAIN_TEXT',
+                'content': comment,
+            }
+        }
+    )
+    response = service_request.execute()
+
+    r = make_response(json.dumps(response, indent=4))
+    r.headers['Content-Type'] = 'application/json'
+    return r
+
+@app.route('/demo', methods=['POST'])
+def upload_demo():
+    print request
+    print request.form
+    return 'success'
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    print 'hello from upload_file'
+    print request
+    print request.form
+    # print request.get_sheet()
+    print request.get_array(field_name='file')
+    return 'success'
+
+@app.route('/export', methods=['GET'])
+def export_records():
+    return excel.make_response_from_array([[1,2], [3, 4]], 'csv', file_name='export_data')
+
+
+@app.route('/example_post', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
 
-    print("Request:")
+    print('Request:')
     print(json.dumps(req, indent=4))
 
-    res = processRequest(req)
+    res = { 'sample': 'text' }
 
     res = json.dumps(res, indent=4)
 
@@ -86,19 +110,6 @@ def show_post(post_id):
     return 'Post %d' % post_id
 
 
-def processRequest(req):
-    print req
-    if req.get("result").get("action") == "QuoteGreeting":
-        return {
-            "speech": 'this is a quote response!',
-            "displayText": 'test quote response',
-            "source": "quote-greeting-webhook"
-        }
-    if req.get("result").get("action") == "FindRoom":
-        return parse_api_ai(req)
-    return {}
-
-
 def init():
     print 'initializing'
 
@@ -106,11 +117,11 @@ def init():
 
 @atexit.register
 def goodbye():
-    print "You are now leaving the Python sector."
+    print 'You are now leaving the Python sector.'
 
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    print "Starting app on port %d" % port
+    print 'Starting app on port %d' % port
     init()
     app.run(debug=True, port=port, host='0.0.0.0')
