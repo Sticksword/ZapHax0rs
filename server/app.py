@@ -8,6 +8,8 @@ import atexit
 from flask import Flask, request, make_response, send_from_directory, render_template, jsonify
 # for reference: http://flask.pocoo.org/docs/0.11/quickstart/
 import flask_excel as excel
+from googleapiclient import discovery
+from oauth2client.client import GoogleCredentials
 
 # Flask app should start in global layout
 app = Flask(__name__, static_url_path='')
@@ -23,14 +25,13 @@ def index():
 def send_js(path):
     return send_from_directory('js', path)
 
-@app.route('/analyse_entities', methods=['GET'])
-def analyse_entities():
-    comment=request.args.get('comment')
+
+def analyse_entities(comment):
     credentials = GoogleCredentials.get_application_default()
     service = discovery.build('language', 'v1', credentials=credentials)
 
     service_request = service.documents().analyzeEntities(
-        body={
+        body = {
             'document': {
                 'type': 'PLAIN_TEXT',
                 'content': comment,
@@ -43,14 +44,14 @@ def analyse_entities():
     r.headers['Content-Type'] = 'application/json'
     return r
 
-@app.route('/analyse_sentences', methods=['GET'])
-def analyse_sentences():
-    comment=request.args.get('comment')
+
+def analyse_sentences(comment):
+    # comment = request.args.get('comment')
     credentials = GoogleCredentials.get_application_default()
     service = discovery.build('language', 'v1', credentials=credentials)
 
     service_request = service.documents().analyzeSentiment(
-        body={
+        body = {
             'document': {
                 'type': 'PLAIN_TEXT',
                 'content': comment,
@@ -58,25 +59,40 @@ def analyse_sentences():
         }
     )
     response = service_request.execute()
+    response['text'] = comment
 
-    r = make_response(json.dumps(response, indent=4))
-    r.headers['Content-Type'] = 'application/json'
-    return r
+    return response
 
 @app.route('/demo', methods=['POST'])
 def upload_demo():
     print request
-    print request.form
-    return 'success'
+    phrase = request.form.get('demo')
+    print phrase
+    google_response = analyse_sentences(phrase)
+    r = make_response(json.dumps(google_response, indent=4))
+    r.headers['Content-Type'] = 'application/json'
+    return r
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     print 'hello from upload_file'
     print request
+    print 'form'
     print request.form
-    # print request.get_sheet()
-    print request.get_array(field_name='file')
-    return 'success'
+    print 'array'
+    arr_of_arr = request.get_array(field_name='file')
+    print arr_of_arr
+
+    res_arr = []
+    for i in range(len(arr_of_arr)):
+        print arr_of_arr[i]
+        res_arr.append(analyse_sentences(arr_of_arr[i][1]))
+    r = make_response(json.dumps(res_arr, indent=4))
+    r.headers['Content-Type'] = 'application/json'
+    return r
+
+
+# example stuff, can ignore
 
 @app.route('/export', methods=['GET'])
 def export_records():
@@ -113,12 +129,13 @@ def show_post(post_id):
 def init():
     print 'initializing'
 
-
-
 @atexit.register
 def goodbye():
     print 'You are now leaving the Python sector.'
 
+# end examples
+
+# main
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))

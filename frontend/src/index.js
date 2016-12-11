@@ -4,8 +4,16 @@ import { Provider } from 'react-redux';
 import { createStore, compose, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 
-import FileUpload from './components/FileUpload';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+
+// Needed for onTouchTap
+// http://stackoverflow.com/a/34015469/988941
+injectTapEventPlugin();
+
+import App from './components/App';
 import rootReducer from './reducers';
+import styles from './styles/main.css';
 
 const middlewares = [
   // Add other middleware on this line...
@@ -21,16 +29,10 @@ const store = createStore(rootReducer, compose(
   )
 );
 
-class App extends React.Component {
-  render () {
-    return (
-      <FileUpload />
-    );
-  }
-}
-
 render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <MuiThemeProvider>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </MuiThemeProvider>,
   document.getElementById('app'));

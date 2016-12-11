@@ -16,7 +16,7 @@ const uploadDemoSuccess = (demo) => {
 
 export const uploadFile = (file) => {
   return (dispatch) => {
-    console.log(file);
+    // console.log(file);
     return Axios.post('http://localhost:5000/upload', file)
       .then(response => {
         dispatch(uploadFileSuccess(response.data));
@@ -29,10 +29,9 @@ export const uploadFile = (file) => {
 
 export const uploadDemo = (demo) => {
   return (dispatch) => {
-    console.log(demo);
     return Axios.post('http://localhost:5000/demo', demo)
       .then(response => {
-        dispatch(uploadFileSuccess(response.data));
+        dispatch(uploadDemoSuccess(response.data));
       })
       .catch(error => {
         throw(error);

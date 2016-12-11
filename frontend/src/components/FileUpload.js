@@ -1,36 +1,28 @@
 import React from 'react';
+import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import TextField from 'material-ui/TextField';
 import { connect } from 'react-redux';
 import { uploadFile, uploadDemo } from '../actions/uploadActions';
+import DataPiece from './DataPiece';
 
 class FileUpload extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {value: ''};
-    this.submitForm = this.submitForm.bind(this);
+    this.submitFile = this.submitFile.bind(this);
     this.submitDemo = this.submitDemo.bind(this);
-    this.handleDemoChange = this.handleDemoChange.bind(this);
   }
 
-  handleDemoChange(event) {
-    this.setState({value: event.target.value});
-  }
-
-  submitDemo(e) {
-    e.preventDefault();
+  submitDemo() {
     let data = new FormData();
-    data.append('demo', this.state.value);
-    console.log(this.state.value);
+    data.append('demo', this.demoUpload.input.value);
     this.props.uploadDemo(data);
 
   }
 
-  submitForm(e) {
-    e.preventDefault();
-    console.log('hello from submitForm');
+  submitFile() {
     let data = new FormData();
-    data.append('foo', 'bar');
     data.append('file', this.fileUpload.files[0]);
-    console.log(data);
     this.props.uploadFile(data);
 
   }
@@ -38,15 +30,17 @@ class FileUpload extends React.Component {
   render() {
     return (
       <div>
-        <h1>Excel file upload (csv, tsv, csvz, tsvz only)</h1>
-        <form encType='multipart/form-data' onSubmit={this.submitForm}>
-          <input ref={(input) => { this.fileUpload = input; }} type='file' name='file' />
-          <input type='submit' value='UploadFile' />
-        </form>
-        <form onSubmit={this.submitDemo}>
-          <input type='text' value={this.state.value} onChange={this.handleDemoChange} />
-          <input type='submit' value='UploadDemo' />
-        </form>
+        <h3>File Demo (csv, tsv, csvz, tsvz only)</h3>
+        <input ref={(input) => { this.fileUpload = input; }} type='file' name='file' />
+        <FlatButton label="Upload File" onClick={this.submitFile} />
+
+        <h3>Single Phrase Demo</h3>
+        <TextField name='demo' ref={(input) => { this.demoUpload = input; }} />
+        <FlatButton label="Upload Demo" onClick={this.submitDemo} />
+
+
+        {this.props.uploads.files.map((item) => <DataPiece key={item.id} item={item} /> )}
+
       </div>
     );
   }
