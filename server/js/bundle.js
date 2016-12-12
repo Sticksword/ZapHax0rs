@@ -32304,7 +32304,7 @@
 	      return _react2.default.createElement(
 	        'div',
 	        null,
-	        _react2.default.createElement(_AppBar2.default, { title: 'Xavier' }),
+	        _react2.default.createElement(_AppBar2.default, { title: 'Cerebro' }),
 	        _react2.default.createElement(_FileUpload2.default, null)
 	      );
 	    }
@@ -40017,7 +40017,17 @@
 	          'Magnitude:'
 	        ),
 	        ' ',
-	        item.documentSentiment.magnitude
+	        item.documentSentiment.magnitude,
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'strong',
+	          null,
+	          'Is it a photo?'
+	        ),
+	        ' ',
+	        item.photos ? 'Yes it is!' : 'No way!',
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement('br', null)
 	      );
 	    }
 	  }]);
@@ -41870,7 +41880,7 @@
 	
 	
 	// module
-	exports.push([module.id, "body {\n  margin: auto;\n  text-align: center;\n}\n\nform {\n  float: left;\n  height: 250px;\n  width: 100%;\n}\n", ""]);
+	exports.push([module.id, "body {\n  margin: auto;\n  text-align: center;\n}\n\nform {\n  float: left;\n  height: 250px;\n  width: 100%;\n}\n\nstrong {\n  color: blue;\n}\n", ""]);
 	
 	// exports
 

@@ -10,7 +10,7 @@ from flask import Flask, request, make_response, send_from_directory, render_tem
 import flask_excel as excel
 from googleapiclient import discovery
 from oauth2client.client import GoogleCredentials
-from classifier import classify_comments, Model, LemmaTokenizer
+from classifier import classify_comments
 
 # Flask app should start in global layout
 app = Flask(__name__, static_url_path='')
@@ -65,44 +65,34 @@ def analyse_sentences(comment):
     return response
 
 
-# @app.route('/classify', methods=['GET'])
-# def classify():
-#     data = json.loads(classify_comments('/Users/michen/Python-Projects/ZapHax0rs/server/test.csv'))
-#     print(data)
-#     return make_response(json.dumps(data, indent=4))
+@app.route('/classify', methods=['GET'])
+def classify():
+    classify_comments('test.csv')
 
 @app.route('/demo', methods=['POST'])
 def upload_demo():
-    print(request)
+    print request
     phrase = request.form.get('demo')
-    print(phrase)
+    print phrase
     google_response = analyse_sentences(phrase)
-    inhouse_response = json.loads(classify_comments(phrase))
-    # print(inhouse_response['Photos']['0'])
-    # print(google_response)
-    google_response['photos'] = inhouse_response['Photos']['0']
     r = make_response(json.dumps(google_response, indent=4))
     r.headers['Content-Type'] = 'application/json'
     return r
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    print('hello from upload_file')
-    print(request)
-    print('form')
-    print(request.form)
-    print('array')
+    print 'hello from upload_file'
+    print request
+    print 'form'
+    print request.form
+    print 'array'
     arr_of_arr = request.get_array(field_name='file')
-    print(arr_of_arr)
+    print arr_of_arr
 
     res_arr = []
     for i in range(len(arr_of_arr)):
-        print(arr_of_arr[i])
-        inhouse_response = json.loads(classify_comments(arr_of_arr[i][0]))
-        print(inhouse_response)
-        google_response = analyse_sentences(arr_of_arr[i][0])
-        google_response['photos'] = inhouse_response['Photos']['0']
-        res_arr.append(google_response)
+        print arr_of_arr[i]
+        res_arr.append(analyse_sentences(arr_of_arr[i][1]))
     r = make_response(json.dumps(res_arr, indent=4))
     r.headers['Content-Type'] = 'application/json'
     return r
@@ -120,7 +110,7 @@ def webhook():
     req = request.get_json(silent=True, force=True)
 
     print('Request:')
-    print((json.dumps(req, indent=4)))
+    print(json.dumps(req, indent=4))
 
     res = { 'sample': 'text' }
 
@@ -143,11 +133,11 @@ def show_post(post_id):
 
 
 def init():
-    print('initializing')
+    print 'initializing'
 
 @atexit.register
 def goodbye():
-    print('You are now leaving the Python sector.')
+    print 'You are now leaving the Python sector.'
 
 # end examples
 
@@ -155,6 +145,6 @@ def goodbye():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    print('Starting app on port %d' % port)
+    print 'Starting app on port %d' % port
     init()
     app.run(debug=True, port=port, host='0.0.0.0')

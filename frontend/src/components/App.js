@@ -6,7 +6,7 @@ class App extends React.Component {
   render () {
     return (
       <div>
-        <AppBar title = "Xavier" />
+        <AppBar title = "Cerebro" />
         <FileUpload />
       </div>
     );

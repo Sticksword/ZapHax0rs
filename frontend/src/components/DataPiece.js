@@ -12,7 +12,12 @@ class DataPiece extends React.Component {
         <br />
         <strong>Score:</strong> {item.documentSentiment.score}
         <br />
-        <strong>Magnitude:</strong> {item.documentSentiment.magnitude}</div>
+        <strong>Magnitude:</strong> {item.documentSentiment.magnitude}
+        <br />
+        <strong>Is it a photo?</strong> {item.photos ? 'Yes it is!' : 'No way!' }
+        <br />
+        <br />
+      </div>
     );
   }
 }
